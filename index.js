@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NoMoreShorts
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Automatically removes YT shorts from view.
 // @author       Auxority
 // @match        https://www.youtube.com/*
