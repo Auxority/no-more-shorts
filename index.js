@@ -12,8 +12,6 @@
 (() => {
     'use strict';
 
-    const INTERVAL_DELAY_MS = 1000;
-
     const destroyShortVideo = (icon) => {
         icon.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
     };
@@ -23,18 +21,45 @@
         icons.forEach(destroyShortVideo);
     };
 
-    const target = document.querySelector('ytd-browse');
+    const isNodeAShortOverlay = (node) => {
+        if (!node.getAttribute) {
+            return;
+        }
+
+        const overlayStyle = node.getAttribute('overlay-style');
+
+        return node.localName === 'ytd-thumbnail-overlay-time-status-renderer'
+        && overlayStyle
+        && overlayStyle === 'SHORTS';
+    }
+
+    const removeNewShort = (node) => {
+        if (isNodeAShortOverlay(node)) {
+            destroyShortVideo(node);
+        }
+    }
+
+    const removeNewShorts = (mutation) => {
+        mutation.addedNodes.forEach(removeNewShort);
+    };
+
+    const isMutationAChildMutation = (mutation) => {
+        return mutation.type === 'childList';
+    }
+
+    const checkMutations = (mutation) => {
+        if (isMutationAChildMutation(mutation)) {
+            removeNewShorts(mutation);
+        }
+    };
+
+    const target = document.querySelector('ytd-page-manager');
     const config = { attributes: true, childList: true, subtree: true };
     const callback = (mutationList, observer) => {
-        for (const mutation of mutationList) {
-            if (mutation.type === 'childList') {
-                console.log('A child node has been added or removed.');
-                console.log(mutation);
-            }
-        }
+        mutationList.forEach(checkMutations);
     };
 
     const observer = new MutationObserver(callback);
 
-    observer.observe(targetNode, config);
+    observer.observe(target, config);
 })();
