@@ -16,10 +16,25 @@
 
     const destroyShortVideo = (icon) => {
         icon.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
-    }
+    };
 
-    setInterval(() => {
+    const destroyShortVideos = () => {
         const icons = document.querySelectorAll(`ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"]`);
         icons.forEach(destroyShortVideo);
-    }, INTERVAL_DELAY_MS);
+    };
+
+    const target = document.querySelector('ytd-browse');
+    const config = { attributes: true, childList: true, subtree: true };
+    const callback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                console.log('A child node has been added or removed.');
+                console.log(mutation);
+            }
+        }
+    };
+
+    const observer = new MutationObserver(callback);
+
+    observer.observe(targetNode, config);
 })();
